@@ -1,0 +1,138 @@
+Q. Is the Python Standard Library included with PyInputPlus?
+
+Ans. PyInputPlus is not a part of the Python Standard Library, so you must install it separately using Pip
+!pip install pyinputplus
+Collecting pyinputplus
+  Downloading PyInputPlus-0.2.12.tar.gz (20 kB)
+  Installing build dependencies ... done
+  Getting requirements to build wheel ... done
+    Preparing wheel metadata ... done
+Collecting pysimplevalidate>=0.2.7
+  Downloading PySimpleValidate-0.2.12.tar.gz (22 kB)
+  Installing build dependencies ... done
+  Getting requirements to build wheel ... done
+    Preparing wheel metadata ... done
+Collecting stdiomask>=0.0.3
+  Downloading stdiomask-0.0.6.tar.gz (3.6 kB)
+  Installing build dependencies ... done
+  Getting requirements to build wheel ... done
+    Preparing wheel metadata ... done
+Building wheels for collected packages: pyinputplus, pysimplevalidate, stdiomask
+  Building wheel for pyinputplus (PEP 517) ... done
+  Created wheel for pyinputplus: filename=PyInputPlus-0.2.12-py3-none-any.whl size=11315 sha256=edd33ad0d97003fd93efbda208e22da04ca401a7f3d26cc3c1cfd2e6a888462a
+  Stored in directory: /root/.cache/pip/wheels/e7/33/73/719f8f1bd984d39face880fd22f6c5ef1b85f726e84c687094
+  Building wheel for pysimplevalidate (PEP 517) ... done
+  Created wheel for pysimplevalidate: filename=PySimpleValidate-0.2.12-py3-none-any.whl size=16192 sha256=045de2a015d7794658390b5c51d04ea5e887e28629cd9989a6cbd67eb6fe5e88
+  Stored in directory: /root/.cache/pip/wheels/5a/8b/6c/2925d22b93860bdc9b8ce02c3d2cf79336606f7469cef66065
+  Building wheel for stdiomask (PEP 517) ... done
+  Created wheel for stdiomask: filename=stdiomask-0.0.6-py3-none-any.whl size=3320 sha256=b3039b4a1108a53b87d3165aeca9fa80cd459c72cc92da350f8c11896c82daab
+  Stored in directory: /root/.cache/pip/wheels/cf/13/89/64d0d3b167759523f4c1e68f883bbc30e7bfa27050edeb418e
+Successfully built pyinputplus pysimplevalidate stdiomask
+Installing collected packages: stdiomask, pysimplevalidate, pyinputplus
+Successfully installed pyinputplus-0.2.12 pysimplevalidate-0.2.12 stdiomask-0.0.6
+
+Q. Why is PyInputPlus commonly imported with import pyinputplus as pypi?
+
+Ans. pypi is alias of PyInputPlus. The as pyip code in the import statement saves us from typing pyinputplus each time we want to call a PyInputPlus function. Instead we can use the shorter pyip name
+
+Q. How do you distinguish between inputInt() and inputFloat()?
+
+Ans. inputInt() : Accepts an integer value, and returns int value
+inputFloat() : Accepts integer/floating point value and returns float value
+import pyinputplus as pyip
+pyip.inputInt()
+pyip.inputFloat()
+7.8
+'7.8' is not an integer.
+7
+9
+9.0
+
+Q. Using PyInputPlus, how do you ensure that the user enters a whole number between 0 and 99?
+
+Ans. In the inputint function we can set the min = 0 and max =99 to ensure user enters number between 0 and 99
+pyip.inputInt(min = 0, max =99)
+777
+Number must be at maximum 99.
+66
+66
+
+Q. What is transferred to the keyword arguments allowRegexes and blockRegexes?
+
+Ans. We can also use regular expressions to specify whether an input is allowed or not. The allowRegexes and blockRegexes keyword arguments take a list of regular expression strings to determine what the PyInputPlus function will accept or reject as valid input.
+response = pyip.inputNum(allowRegexes=[r'(I|V|X|L|C|D|M)+', r'zero']) # it allowes roman letters as numbers too
+X
+response = pyip.inputNum(blockRegexes=[r'[02468]$'])# blocks the even numbers
+2
+This response is invalid.
+4
+This response is invalid.
+6
+This response is invalid.
+45
+
+Q. If a blank input is entered three times, what does inputStr(limit=3) do?
+
+Ans. It will throw RetryLimitException exception.
+response = pyip.inputStr(limit=3)
+Blank values are not allowed.
+
+Blank values are not allowed.
+
+Blank values are not allowed.
+---------------------------------------------------------------------------
+ValidationException                       Traceback (most recent call last)
+/usr/local/lib/python3.7/dist-packages/pyinputplus/__init__.py in _genericInput(prompt, default, timeout, limit, applyFunc, validationFunc, postValidateApplyFunc, passwordMask)
+    167             possibleNewUserInput = validationFunc(
+--> 168                 userInput
+    169             )  # If validation fails, this function will raise an exception. Returns an updated value to use as user input (e.g. stripped of whitespace, etc.)
+
+/usr/local/lib/python3.7/dist-packages/pyinputplus/__init__.py in <lambda>(value)
+    243     validationFunc = lambda value: pysv._prevalidationCheck(
+--> 244         value, blank=blank, strip=strip, allowRegexes=allowRegexes, blockRegexes=blockRegexes, excMsg=None,
+    245     )[1]
+
+/usr/local/lib/python3.7/dist-packages/pysimplevalidate/__init__.py in _prevalidationCheck(value, blank, strip, allowRegexes, blockRegexes, excMsg)
+    249         # value is blank but blanks aren't allowed.
+--> 250         _raiseValidationException(_("Blank values are not allowed."), excMsg)
+    251     elif blank and value == "":
+
+/usr/local/lib/python3.7/dist-packages/pysimplevalidate/__init__.py in _raiseValidationException(standardExcMsg, customExcMsg)
+    221     if customExcMsg is None:
+--> 222         raise ValidationException(str(standardExcMsg))
+    223     else:
+
+ValidationException: Blank values are not allowed.
+
+During handling of the above exception, another exception occurred:
+
+RetryLimitException                       Traceback (most recent call last)
+<ipython-input-11-af00d69b8cd2> in <module>()
+----> 1 response = pyip.inputStr(limit=3)
+
+/usr/local/lib/python3.7/dist-packages/pyinputplus/__init__.py in inputStr(prompt, default, blank, timeout, limit, strip, allowRegexes, blockRegexes, applyFunc, postValidateApplyFunc)
+    252         applyFunc=applyFunc,
+    253         postValidateApplyFunc=postValidateApplyFunc,
+--> 254         validationFunc=validationFunc,
+    255     )
+    256 
+
+/usr/local/lib/python3.7/dist-packages/pyinputplus/__init__.py in _genericInput(prompt, default, timeout, limit, applyFunc, validationFunc, postValidateApplyFunc, passwordMask)
+    186                 else:
+    187                     # If there is no default, then raise the timeout/limit exception.
+--> 188                     raise limitOrTimeoutException
+    189             else:
+    190                 # If there was no timeout/limit exceeded, let the user enter input again.
+
+RetryLimitException: 
+Q. If blank input is entered three times, what does inputStr(limit=3, default='hello') do?
+
+When you use limit keyword arguments and also pass a default keyword argument, the function returns the default value instead of raising an exception
+response = pyip.inputStr(limit=3,default='hello')
+response
+Blank values are not allowed.
+
+Blank values are not allowed.
+
+Blank values are not allowed.
+'hello'
